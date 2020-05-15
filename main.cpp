@@ -28,10 +28,8 @@ class BaseCar {
         std::string model;
         Colors color;
         int speed;
-        // TODO: remove static variable from the abstract class
-    private:
-        static const int numberSeats = 4;
-
+    protected:
+        static const std::string context;
     public:
         BaseCar(std::string model = "", Colors color = WHITE, int speed = 0) : model(model), color(color), speed(speed) {}
         BaseCar &operator=(BaseCar &);
@@ -41,8 +39,7 @@ class BaseCar {
         std::string get_model() const;
         Colors get_color() const;
         int get_speed() const;
-
-        static int get_numberSeats();
+        static std::string get_context();
 
         void set_model(std::string model);
         void set_color(Colors color);
@@ -52,6 +49,12 @@ class BaseCar {
         virtual void read(std::istream &);
         virtual void print(std::ostream &);
 };
+
+const std::string BaseCar::context = "Masina";
+
+std::string BaseCar::get_context() {
+    return BaseCar::context;
+}
 
 void BaseCar::read(std::istream &in) {
     std::string str;
@@ -70,11 +73,9 @@ void BaseCar::read(std::istream &in) {
 }
 
 void BaseCar::print(std::ostream &out) {
-    out << "-----------------------------\n";
     out << "Model: " << this->model << "\n";
     out << "Culoare: ";
-    switch (this->color)
-    {
+    switch (this->color) {
     case 0:
         out << "Alba";
         break;
@@ -119,10 +120,6 @@ std::string BaseCar::get_model() const {
     return this->model;
 }
 
-int BaseCar::get_numberSeats() {
-    return BaseCar::numberSeats;
-}
-
 Colors BaseCar::get_color() const {
     return this->color;
 }
@@ -145,20 +142,134 @@ void BaseCar::set_speed(int speed) {
 }
 // ========================================================= //
 
-// CoupeCar
-class CoupeCar : public BaseCar {
+// Coupe
+class Coupe : public BaseCar {
     private:
-        static const int numberSeats = 2;
-
+        static const int numberDoors = 2;
+    protected:
+        static const std::string context;
     public:
-        CoupeCar(std::string model, Colors color, int speed);
-        static int get_numberSeats();
+        Coupe(std::string model, Colors color, int speed);
+        static int get_numberDoors();
+        static std::string get_context();
 };
 
-CoupeCar::CoupeCar(std::string model = "", Colors color = WHITE, int speed = 0) : BaseCar(model, color, speed) {}
+Coupe::Coupe(std::string model = "", Colors color = WHITE, int speed = 0) : BaseCar(model, color, speed) {}
 
-int CoupeCar::get_numberSeats() {
-    return CoupeCar::numberSeats;
+const std::string Coupe::context = "Coupe";
+
+std::string Coupe::get_context() {
+    return Coupe::context;
+}
+
+int Coupe::get_numberDoors() {
+    return Coupe::numberDoors;
+}
+
+// ========================================================= //
+
+// HotHatch
+class HotHatch: public BaseCar {
+    private:
+        int horsepower;
+    protected:
+        static const std::string context;
+    public:
+        HotHatch(std::string model, Colors color, int speed, int horsepower);
+        static std::string get_context();
+        int get_horsepower();
+        friend std::istream& operator>>(std::istream&, HotHatch&);
+        friend std::ostream& operator<<(std::ostream&, HotHatch&);
+    private:
+        void read(std::istream&);
+        void print(std::ostream&);
+};
+
+HotHatch::HotHatch(std::string model = "", Colors colors = WHITE, int speed = 0, int horsepower = 750): BaseCar(model, color, speed), horsepower(horsepower) {}
+
+const std::string HotHatch::context = "Hot-Hatch";
+
+std::string HotHatch::get_context() {
+    return HotHatch::context;
+}
+
+int HotHatch::get_horsepower() {
+    return this->horsepower;
+}
+
+void HotHatch::read(std::istream& in) {
+    BaseCar::read(in);
+    std::cout << "Cai putere: ";
+    in >> this->horsepower;
+    std::cout << "\n";
+}
+
+void HotHatch::print(std::ostream& out) {
+    BaseCar::print(out);
+    out << "Cai putere: " << this->horsepower << "\n";
+}
+
+std::istream& operator>>(std::istream& in, HotHatch& car) {
+    car.read(in);
+    return in;
+}
+
+std::ostream& operator<<(std::ostream& out, HotHatch& car) {
+    car.print(out);
+    return out;
+}
+
+// ========================================================= //
+
+// Supersport
+class Supersport: public BaseCar {
+    private:
+        int horsepower;
+    protected:
+        static const std::string context;
+    public:
+        Supersport(std::string model, Colors color, int speed, int horsepower);
+        static std::string get_context();
+        int get_horsepower();
+        friend std::istream& operator>>(std::istream&, Supersport&);
+        friend std::ostream& operator<<(std::ostream&, Supersport&);
+    private:
+        void read(std::istream&);
+        void print(std::ostream&);
+};
+
+Supersport::Supersport(std::string model = "", Colors colors = WHITE, int speed = 0, int horsepower = 750): BaseCar(model, color, speed), horsepower(horsepower) {}
+
+const std::string Supersport::context = "Supersport";
+
+std::string Supersport::get_context() {
+    return Supersport::context;
+}
+
+int Supersport::get_horsepower() {
+    return this->horsepower;
+}
+
+void Supersport::read(std::istream& in) {
+    BaseCar::read(in);
+    std::cout << "Cai putere: ";
+    in >> this->horsepower;
+    std::cout << "\n";
+}
+
+void Supersport::print(std::ostream& out) {
+    BaseCar::print(out);
+    out << "Cai putere: " << this->horsepower << "\n";
+}
+
+std::istream& operator>>(std::istream& in, Supersport& car) {
+    car.read(in);
+    return in;
+}
+
+std::ostream& operator<<(std::ostream& out, Supersport& car) {
+    car.print(out);
+    return out;
 }
 
 // Template Expozitie
@@ -188,18 +299,15 @@ template <class masini> class Expozitie {
             }
         }
 
-        // ~Expozitie() {
-        //     delete[] this->v;
-        // }
 
         friend std::istream& operator>>(std::istream &in, Expozitie<masini> &exp) {
-            std::cout << "n = \n";
+            std::cout << "n = ";
             in >> exp.n;
-            // exp.v = new std::list< std::pair<masini, int> >;
+            exp.v = std::list< std::pair<masini, int> >();
 
-            std::cout << "Introduceti masinile:\n";
+            std::cout << "Introduceti masinile " << masini::get_context() <<":\n";
             for(int i = 0; i < exp.n; i++) {
-                masini* car = new masini();
+                masini car;
                 std::cin >> car;
                 std::pair<masini, int> pr(car, -1);
                 exp.v.push_back(pr);
@@ -207,6 +315,18 @@ template <class masini> class Expozitie {
 
             return in;
         }
+
+        friend std::ostream& operator<<(std::ostream &out, Expozitie<masini> &exp) {
+            std::cout << "Masinile " << masini::get_context() << " citite sunt:\n\n";
+            typename std::list< std::pair<masini, int> >::iterator it;
+            for(it = exp.v.begin(); it != exp.v.end(); it++) {
+                std::cout << "Masina " << std::distance(exp.v.begin(), it) << "\n";
+                std::cout << it->first << "\n";
+            }
+
+            return out;
+        }
+
         int get_n();
 };
 
@@ -226,6 +346,8 @@ class Menu {
         void mainMenu();
         void option1();
         void option2();
+        void option3();
+        void option4();
         void backToMainMenu();
 };
 
@@ -238,26 +360,34 @@ void Menu::mainMenu() {
     std::cout << "Alege o optiune:\n\n";
     std::cout << "1. Citeste n obiecte: \n";
     std::cout << "2. Expozitie - Masini Coupe\n";
+    std::cout << "3. Expozitie - Masini Hot-hatch\n";
+    std::cout << "4. Expozitie - Masini Supersport\n";
 
     int opt;
     std::cin >> opt;
 
-    switch (opt)
-    {
-    case 1:
-        this->option1();
-    break;
-    case 2:
-        this->option2();
-    break;
+    switch (opt) {
+        case 1:
+            this->option1();
+        break;
+        case 2:
+            this->option2();
+        break;
+        case 3:
+            this->option3();
+        break;
+        case 4:
+            this->option4();
+        break;
     }
 }
 
-void Menu::option2() {
+void Menu::backToMainMenu() {
+    std::string opt;
+    std::cout << "Apasa orice tasta urmata de enter pentru a te intoarce in meniul principala\n";
+    std::cin >> opt;
     system("cls");
-    Expozitie<CoupeCar> coupe;
-    // std::cin >> coupe;
-    this->backToMainMenu();
+    this->mainMenu();
 }
 
 void Menu::option1() {
@@ -284,21 +414,40 @@ void Menu::option1() {
     this->backToMainMenu();
 }
 
-void Menu::backToMainMenu() {
-    std::string opt;
-    std::cout << "Apasa orice tasta urmata de enter pentru a te intoarce in meniul principala\n";
-    std::cin >> opt;
+void Menu::option2() {
     system("cls");
-    this->mainMenu();
+    Expozitie<Coupe> coupe;
+    std::cin >> coupe;
+
+    system("cls");
+    std::cout << coupe;
+
+    this->backToMainMenu();
+}
+
+void Menu::option3() {
+    system("cls");
+    Expozitie<HotHatch> hotHatch;
+    std::cin >> hotHatch;
+
+    system("cls");
+    std::cout << hotHatch;
+
+    this->backToMainMenu();
+}
+
+void Menu::option4() {
+    system("cls");
+    Expozitie<Supersport> superSport;
+    std::cin >> superSport;
+
+    system("cls");
+    std::cout << superSport;
+
+    this->backToMainMenu();
 }
 
 int main() {
-    //   CoupeCar* car = new CoupeCar();
-    //   std::cin >> *car;
-    //   car->set_model("BMW");
-    //   std::cout << CoupeCar::get_numberSeats();
     (new Menu());
-    // Expozitie<CoupeCar> *e = new Expozitie<CoupeCar>();
-
     return 0;
 }
