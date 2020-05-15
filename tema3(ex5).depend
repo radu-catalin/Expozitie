@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1589301261 source:d:\var\www\ooplab\workspace\tema3(ex5)\main.cpp
+	<iostream>
+	<string>
+	<vector>
+	<list>
+
