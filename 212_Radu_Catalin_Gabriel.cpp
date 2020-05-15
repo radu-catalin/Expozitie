@@ -12,12 +12,17 @@ enum Colors {
     GREEN,
 };
 
-// Error
+// CustomError
 class CustomError {
+    private:
+        std::string errorMessage;
     public:
-        std::string name;
         CustomError(std::string errorMessage) {
-            this->name = errorMessage + "\n";
+            this->errorMessage = errorMessage + "\n";
+        }
+
+        std::string get_error() {
+            return this->errorMessage;
         }
 };
 // ========================================================= //
@@ -291,10 +296,9 @@ template <class masini> class Expozitie {
 
         Expozitie(Expozitie &exp) {
             this->n = exp.n;
-            this->v = new std::list< std::pair<masini, int> >;
-            for (int i = 0; i < this->n; i++)
-            {
-                std::pair<masini, int> pr(exp.v[i].first, exp.v[i].second);
+            typename std::list < std::pair<masini, int> >::iterator it;
+            for (it = exp.v.begin(); it != exp.v.end(); it++) {
+                std::pair<masini, int> pr(it->first, it->second);
                 this->v.push_back(pr);
             }
         }
@@ -327,13 +331,112 @@ template <class masini> class Expozitie {
             return out;
         }
 
-        int get_n();
+        int get_n() {
+            return this->n;
+        }
 };
 
-template <class masini> int Expozitie<masini>::get_n() {
-    return this->n;
-}
+// Template Expozitie - Specializare Supersport
+template <> class Expozitie<Supersport> {
+    private:
+        std::list< std::pair<Supersport, int> > v;
+        int n;
+        int numberOfExposedCars;
 
+    public:
+        Expozitie(Supersport *p = NULL, int n = 0, int numberOfExposedCars = 0) {
+            this->n = n;
+            if (n != 0 && p != NULL) {
+                for (int i = 0; i < this->n; i++) {
+                    std::pair<Supersport, int> pr(p[i], -1);
+                    this->v.push_back(pr);
+                }
+            }
+        }
+
+        Expozitie(Expozitie &exp) {
+            this->n = exp.n;
+            typename std::list< std::pair<Supersport, int> >::iterator it;
+            for (it = exp.v.begin(); it != exp.v.end(); it++) {
+                std::pair<Supersport, int> pr(it->first, it->second);
+                this->v.push_back(pr);
+            }
+        }
+
+
+        friend std::istream& operator>>(std::istream &in, Expozitie<Supersport> &exp) {
+            std::cout << "n = ";
+            in >> exp.n;
+            exp.v = std::list< std::pair<Supersport, int> >();
+
+            std::cout << "Introduceti masinile " << Supersport::get_context() <<":\n";
+            for(int i = 0; i < exp.n; i++) {
+                std::cout << "Masina " << i << "\n";
+                Supersport car;
+                std::cin >> car;
+                std::pair<Supersport, int> pr(car, -1);
+                exp.v.push_back(pr);
+            }
+
+            std::cout << "numarul de masini supersport expuse: ";
+            try {
+                std::cin >> exp.numberOfExposedCars;
+
+                if (exp.numberOfExposedCars > exp.n || exp.numberOfExposedCars < 0) {
+                    throw new CustomError("Error: numarul masini expuse nu este valid!");
+                }
+
+                if(exp.numberOfExposedCars != 0) {
+                    std::cout << "Cumpara o masina: \n";
+                    std::cout <<"Alege pozitia masini (se incepe de la 0)\n";
+                    int opt;
+                    while(true) {
+                        std::cout << "Aleg masina: ";
+                        std::cin >> opt;
+                        typename std::list< std::pair<Supersport, int> >::iterator it;
+                        for(it = exp.v.begin(); it != exp.v.end(); it++) {
+                            if(std::distance(exp.v.begin(), it) == opt) {
+                                if(it->second != -1) {
+                                    std::cout << "Masina este deja vanduta!\n\n";
+                                } else {
+                                    std::cout << "Alege pretul de vanzare: ";
+                                    std::cin >> it->second;
+                                    std::cout << "\n";
+                                }
+                                break;
+                            }
+                        }
+
+                        std::cout << "Continuati? (0 - nu, 1 - da)\n\n";
+                        std::cin >> opt;
+                        if(opt == 0) {
+                        break;
+                        }
+                    }
+                }
+            } catch (CustomError* error) {
+                std::cout << error->get_error();
+            }
+
+            return in;
+        }
+
+        friend std::ostream& operator<<(std::ostream &out, Expozitie<Supersport> &exp) {
+            std::cout << "Masinile " << Supersport::get_context() << " citite sunt:\n\n";
+            typename std::list< std::pair<Supersport, int> >::iterator it;
+            for(it = exp.v.begin(); it != exp.v.end(); it++) {
+                std::cout << "Masina " << std::distance(exp.v.begin(), it) << "\n";
+                std::cout << it->first;
+                std::cout << "Pret vanzare: " << it->second << "\n";
+            }
+
+            return out;
+        }
+
+        int get_n() {
+            return this->n;
+        }
+};
 
 // ========================================================= //
 
@@ -358,10 +461,10 @@ Menu::Menu() {
 void Menu::mainMenu() {
     system("cls");
     std::cout << "Alege o optiune:\n\n";
-    std::cout << "1. Citeste n obiecte: \n";
-    std::cout << "2. Expozitie - Masini Coupe\n";
-    std::cout << "3. Expozitie - Masini Hot-hatch\n";
-    std::cout << "4. Expozitie - Masini Supersport\n";
+    std::cout << " 1. Citeste n obiecte: \n";
+    std::cout << " 2. Expozitie - Masini Coupe\n";
+    std::cout << " 3. Expozitie - Masini Hot-hatch\n";
+    std::cout << " 4. Expozitie - Specializare Supersport\n";
 
     int opt;
     std::cin >> opt;
@@ -408,7 +511,7 @@ void Menu::option1() {
 
         delete[] cars;
     } catch (CustomError *e) {
-        std::cout << e->name;
+        std::cout << e->get_error();
     }
 
     this->backToMainMenu();
